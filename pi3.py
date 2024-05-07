@@ -90,7 +90,6 @@ def main():
             if "JOIN" in message:
                 print("Device joining")
                 ack_join(node, address)
-                #send_deal(node)
 
 
 if __name__ == "__main__":
