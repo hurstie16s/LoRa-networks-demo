@@ -83,6 +83,7 @@ def main():
         address, message, flag = node.receive_gateway()
         if flag:
             print("Message received")
+            message = message.decode()
             print(message)
             if "JOIN" in message:
                 print("Device joining")
