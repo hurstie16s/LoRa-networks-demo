@@ -9,7 +9,6 @@ import termios
 import tty
 from threading import Timer
 
-
 global offset_frequence
 global nodes
 
@@ -53,7 +52,6 @@ def send_deal(node):
 
 
 def ack_join(node, address):
-
     new_address = len(nodes) + 2
     nodes.append(new_address)
 
@@ -72,6 +70,7 @@ def ack_join(node, address):
     ) + bytes(
         [node.offset_freq]
     ) + message.encode()
+
 
 def main():
     tty.setcbreak(sys.stdin.fileno())
