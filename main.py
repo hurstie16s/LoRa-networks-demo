@@ -65,7 +65,9 @@ def get_cpu_temp():
 
 # node = sx126x.sx126x(serial_num = "/dev/ttyS0",freq=433,addr=0,power=22,rssi=False,air_speed=2400,relay=False)
 node = sx126x.sx126x(serial_num="/dev/ttyS0", freq=868, addr=0, power=22, rssi=True, air_speed=2400, relay=False)
-node.get_settings()
+
+
+# node.get_settings()
 
 def send_deal():
     get_rec = ""
