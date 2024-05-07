@@ -86,7 +86,6 @@ def send_deal():
             sys.stdout.flush()
     print("")
     get_t = get_rec.split(",")
-    print(get_t[2])
 
 
     offset_frequence = int(get_t[1]) - (850 if int(get_t[1]) > 850 else 410)
@@ -168,7 +167,7 @@ try:
         # timer,send messages automatically
 
 except Exception as e:
-    print("ERROR: ", e)
+    print(e)
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
     # print('\x1b[2A',end='\r')
     # print(" "*100)
