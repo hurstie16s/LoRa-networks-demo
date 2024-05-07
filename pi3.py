@@ -64,7 +64,7 @@ def get_cpu_temp():
 #
 
 # node = sx126x.sx126x(serial_num = "/dev/ttyS0",freq=433,addr=0,power=22,rssi=False,air_speed=2400,relay=False)
-node = sx126x.sx126x(serial_num="/dev/ttyS0", freq=868, addr=1, power=22, rssi=True, air_speed=2400, relay=False)
+node = sx126x.sx126x(serial_num="/dev/ttyS0", freq=868, addr=0, power=22, rssi=True, air_speed=2400, relay=False)
 
 
 # node.get_settings()
@@ -84,8 +84,10 @@ def send_deal():
             get_rec += rec
             sys.stdout.write(rec)
             sys.stdout.flush()
-
+    print("")
     get_t = get_rec.split(",")
+    print(get_t[2])
+
 
     offset_frequence = int(get_t[1]) - (850 if int(get_t[1]) > 850 else 410)
     #
@@ -94,8 +96,8 @@ def send_deal():
     #         receiving node              receiving node                   receiving node           own high 8bit           own low 8bit                 own
     #         high 8bit address           low 8bit address                    frequency                address                 address                  frequency             message payload
     data = bytes([int(get_t[0]) >> 8]) + bytes([int(get_t[0]) & 0xff]) + bytes([offset_frequence]) + bytes(
-        [node.addr >> 8]) + bytes([node.addr & 0xff]) + bytes([node.offset_freq]) + get_t[2].encode()
-
+        [node.addr >> 8]) + bytes([node.addr & 0xff]) + bytes([node.offset_freq]) + get_t[0].encode()
+    print(data)
     node.send(data)
     print('\x1b[2A', end='\r')
     print(" " * 200)
@@ -165,7 +167,8 @@ try:
 
         # timer,send messages automatically
 
-except:
+except Exception as e:
+    print("ERROR: ", e)
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
     # print('\x1b[2A',end='\r')
     # print(" "*100)
