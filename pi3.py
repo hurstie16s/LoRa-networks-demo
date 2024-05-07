@@ -71,6 +71,8 @@ def ack_join(node, address):
         [node.offset_freq]
     ) + message.encode()
 
+    node.send(data)
+
 
 def main():
     tty.setcbreak(sys.stdin.fileno())
