@@ -52,6 +52,9 @@ def send_deal(node):
 
 
 def ack_join(node, address):
+
+    print("Sending ACK to address ", address)
+
     new_address = len(nodes) + 2
     nodes.append(new_address)
 
