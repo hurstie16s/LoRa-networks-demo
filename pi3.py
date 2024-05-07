@@ -166,7 +166,7 @@ try:
 
         # timer,send messages automatically
 
-except Exception as e:
+except BaseException as e:
     print(e)
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
     # print('\x1b[2A',end='\r')
