@@ -108,7 +108,7 @@ def main():
             if "ACK-JOIN:" in message:
                 # Acknowledge join, change address
                 print("Join Acknowledgment")
-                prefix, address = message.split("ACK-JOIN:")
+                prefix, address = message.split(":")
                 device_address = int(address)
                 node.addr = device_address
 
