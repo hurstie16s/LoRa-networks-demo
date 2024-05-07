@@ -36,6 +36,7 @@ class sx126x:
 
     SX126X_UART_BAUDRATE_1200 = 0x00
     SX126X_UART_BAUDRATE_2400 = 0x20
+
     SX126X_UART_BAUDRATE_4800 = 0x40
     SX126X_UART_BAUDRATE_9600 = 0x60
     SX126X_UART_BAUDRATE_19200 = 0x80
@@ -98,8 +99,8 @@ class sx126x:
         self.ser.flushInput()
         self.set(freq, addr, power, rssi, air_speed, net_id, buffer_size, crypt, relay, lbt, wor)
 
-    def set(self, freq, addr, power, rssi, air_speed=2400, \
-            net_id=0, buffer_size=240, crypt=0, \
+    def set(self, freq, addr, power, rssi, air_speed=2400,
+            net_id=0, buffer_size=240, crypt=0,
             relay=False, lbt=False, wor=False):
         self.send_to = addr
         self.addr = addr

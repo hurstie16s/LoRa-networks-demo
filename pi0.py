@@ -84,8 +84,10 @@ def send_deal():
             get_rec += rec
             sys.stdout.write(rec)
             sys.stdout.flush()
-
+    print("")
     get_t = get_rec.split(",")
+    print(get_t)
+
 
     offset_frequence = int(get_t[1]) - (850 if int(get_t[1]) > 850 else 410)
     #
@@ -95,7 +97,7 @@ def send_deal():
     #         high 8bit address           low 8bit address                    frequency                address                 address                  frequency             message payload
     data = bytes([int(get_t[0]) >> 8]) + bytes([int(get_t[0]) & 0xff]) + bytes([offset_frequence]) + bytes(
         [node.addr >> 8]) + bytes([node.addr & 0xff]) + bytes([node.offset_freq]) + get_t[2].encode()
-
+    print(data)
     node.send(data)
     print('\x1b[2A', end='\r')
     print(" " * 200)
