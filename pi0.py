@@ -168,7 +168,7 @@ try:
         # timer,send messages automatically
 
 except Exception as e:
-    print(e)
+    print("ERROR: ", e)
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
     # print('\x1b[2A',end='\r')
     # print(" "*100)
