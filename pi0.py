@@ -104,7 +104,7 @@ def main():
 
         address, message, flag = node.receive_gateway()
         if flag:
-            print(type(message))
+            message = message[2:1]
             if "ACK-JOIN:" in message:
                 # Acknowledge join, change address
                 print("Join Acknowledgment")
