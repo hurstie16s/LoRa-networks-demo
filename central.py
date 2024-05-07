@@ -100,7 +100,7 @@ def send_deal():
 
 
 
-"""
+
 def send_cpu_continue(continue_or_not=True):
     if continue_or_not:
         global timer_task
@@ -121,7 +121,7 @@ def send_cpu_continue(continue_or_not=True):
         time.sleep(0.2)
         timer_task.cancel()
         pass
-"""
+
 old_settings = termios.tcgetattr(sys.stdin)
 tty.setcbreak(sys.stdin.fileno())
 # node = sx126x.sx126x(serial_num = "/dev/ttyS0",freq=433,addr=0,power=22,rssi=False,air_speed=2400,relay=False)

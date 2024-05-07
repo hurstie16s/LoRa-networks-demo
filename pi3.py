@@ -34,14 +34,6 @@ from threading import Timer
 #
 
 
-#    The following is to obtain the temprature of the RPi CPU
-def get_cpu_temp():
-    tempFile = open("/sys/class/thermal/thermal_zone0/temp")
-    cpu_temp = tempFile.read()
-    tempFile.close()
-    return float(cpu_temp) / 1000
-
-
 #   serial_num
 #       PiZero, Pi3B+, and Pi4B use "/dev/ttyS0"
 #
@@ -99,34 +91,10 @@ def send_deal():
 
 
 
-
-
-def send_cpu_continue(continue_or_not=True):
-    if continue_or_not:
-        global timer_task
-        global seconds
-        #
-        # boarcast the cpu temperature at 868.125MHz
-        #
-        data = bytes([255]) + bytes([255]) + bytes([18]) + bytes([255]) + bytes([255]) + bytes(
-            [12]) + "CPU Temperature:".encode() + str(get_cpu_temp()).encode() + " C".encode()
-        node.send(data)
-        time.sleep(0.2)
-        timer_task = Timer(seconds, send_cpu_continue)
-        timer_task.start()
-    else:
-        data = bytes([255]) + bytes([255]) + bytes([18]) + bytes([255]) + bytes([255]) + bytes(
-            [12]) + "CPU Temperature:".encode() + str(get_cpu_temp()).encode() + " C".encode()
-        node.send(data)
-        time.sleep(0.2)
-        timer_task.cancel()
-        pass
-
-
 old_settings = termios.tcgetattr(sys.stdin)
 tty.setcbreak(sys.stdin.fileno())
 # node = sx126x.sx126x(serial_num = "/dev/ttyS0",freq=433,addr=0,power=22,rssi=False,air_speed=2400,relay=False)
-node = sx126x.sx126x(serial_num="/dev/ttyS0", freq=868, addr=3, power=22, rssi=True, air_speed=2400, relay=False)
+node = sx126x.sx126x(serial_num="/dev/ttyS0", freq=868, addr=0, power=22, rssi=True, air_speed=2400, relay=False)
 
 try:
     time.sleep(1)
