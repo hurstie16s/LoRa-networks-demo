@@ -83,6 +83,7 @@ def main():
         address, message, flag = node.receive_gateway()
         if flag:
             print("Message received")
+            print(message)
             if "JOIN" in message:
                 ack_join(node, address)
 
