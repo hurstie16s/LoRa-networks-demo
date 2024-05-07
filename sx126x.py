@@ -258,7 +258,7 @@ class sx126x:
             print(r_buff)
 
             print("receive message from node address with frequence\033[1;32m %d,%d.125MHz\033[0m" % (
-            (r_buff[0] << 8) + r_buff[1], r_buff[2] + self.start_freq), end='\r\n', flush=True)
+                (r_buff[0] << 8) + r_buff[1], r_buff[2] + self.start_freq), end='\r\n', flush=True)
             print("message is " + str(r_buff[3:-1]), end='\r\n')
 
             # print the rssi
@@ -269,6 +269,18 @@ class sx126x:
             else:
                 pass
                 # print('\x1b[2A',end='\r')
+
+    def receive_gateway(self):
+        if self.ser.inWaiting() > 0:
+            time.sleep(0.5)
+            r_buff = self.ser.read(self.ser.inWaiting())
+
+            receive_address = r_buff[0] << 8
+            message = str(r_buff[3:-1])
+
+            return receive_address, message, True
+
+        return None, None, False
 
     def get_channel_rssi(self):
         GPIO.output(self.M1, GPIO.LOW)

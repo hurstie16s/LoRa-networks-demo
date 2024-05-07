@@ -100,6 +100,17 @@ def main():
     # show join
     join(node)
 
+    while True:
+
+        address, message, flag = node.receive_gateway()
+        if flag:
+            if "ACK-JOIN:" in message:
+                # Acknowledge join, change address
+                print("Join Acknowledgment")
+                prefix, address = message.split("ACK-JOIN:")
+                device_address = int(address)
+                node.addr = device_address
+
 
 if __name__ == "__main__":
     main()
