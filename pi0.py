@@ -104,7 +104,7 @@ def main():
 
         address, message, flag = node.receive_gateway()
         if flag:
-            message = message[1]
+            message = message[1:]
             message = message.replace("'", "")
             print(message)
             if "ACK-JOIN:" in message:
