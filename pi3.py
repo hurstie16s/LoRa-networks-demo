@@ -85,6 +85,7 @@ def main():
             print("Message received")
             print(message)
             if "JOIN" in message:
+                print("Device joining")
                 ack_join(node, address)
 
 
