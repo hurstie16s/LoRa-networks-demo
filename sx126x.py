@@ -180,7 +180,7 @@ class sx126x:
         self.ser.flushInput()
 
         for i in range(2):
-            print(bytes(self.cfg_reg))
+            print("Bytes: "+str(bytes(self.cfg_reg)))
             self.ser.write(bytes(self.cfg_reg))
             r_buff = 0
             time.sleep(0.2)
