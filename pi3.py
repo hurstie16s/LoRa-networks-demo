@@ -101,8 +101,9 @@ def listen(node):
             if "TEMP:" in content:
                 print("Device temperature received")
                 content = content[1:]
-                content = int(content.replace("'", ""))
-                print(content)
+                prefix, temp = content.replace("'", "").split(":")
+                temp = float(temp)
+                print(temp)
 
 
 def get_temp(node):
@@ -110,7 +111,7 @@ def get_temp(node):
         for node_address in nodes:
             print("Getting temp for", node_address)
             request_temp(node, node_address)
-        time.sleep(5)
+        time.sleep(15)
 
 
 def main():

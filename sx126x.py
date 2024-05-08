@@ -275,8 +275,6 @@ class sx126x:
             time.sleep(0.5)
             r_buff = self.ser.read(self.ser.inWaiting())
 
-            print(r_buff)
-
             receive_address = (r_buff[0] << 8) + r_buff[1]
             message = str(r_buff[3:-1])
 
