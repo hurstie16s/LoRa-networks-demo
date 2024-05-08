@@ -92,7 +92,10 @@ def send_ultrasonic(node, address, ultrasonic):
 
 
 def main():
+
     ultrasonic = DistanceSensor(echo=17, trigger=14)
+    time.sleep(1)
+
     device_address = 1
 
     tty.setcbreak(sys.stdin.fileno())
