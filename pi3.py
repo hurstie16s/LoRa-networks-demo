@@ -8,9 +8,9 @@ import select
 import termios
 import tty
 from threading import Timer
+import paho.mqtt.client as mqtt
 
 global offset_frequence
-#global nodes
 
 nodes = []
 offset_frequence = 18
@@ -81,15 +81,15 @@ def ack_join(node, address):
     node.send(data)
 
 
-def request_temp(node, address):
+def request_water_level(node, address):
     global nodes
 
-    data = get_data(address, offset_frequence, node, "TEMP")
+    data = get_data(address, offset_frequence, node, "WATER")
 
     node.send(data)
 
 
-def listen(node):
+def listen(node, client, topic):
     while True:
         address, content, flag = node.receive_gateway()
         if flag:
@@ -98,29 +98,34 @@ def listen(node):
             if "JOIN" in content:
                 print("Device joining")
                 ack_join(node, address)
-            if "TEMP:" in content:
-                print("Device temperature received")
+            if "WATER:" in content:
+                print("Device water level received")
                 content = content[1:]
-                prefix, temp = content.replace("'", "").split(":")
-                temp = float(temp)
-                print(temp)
+                prefix, water = content.replace("'", "").split(":")
+                water = str(address) + ":" + str(float(water))
+                print(water)
+                client.publish(topic, water)
 
 
-def get_temp(node):
+def get_water_level(node):
     while True:
         for node_address in nodes:
-            print("Getting temp for", node_address)
-            request_temp(node, node_address)
+            print("Getting water level for", node_address)
+            request_water_level(node, node_address)
         time.sleep(15)
 
 
 def main():
+
+    client = mqtt.Client()
+    topic = "adv_net"
+
     tty.setcbreak(sys.stdin.fileno())
     # node = sx126x.sx126x(serial_num = "/dev/ttyS0",freq=433,addr=0,power=22,rssi=False,air_speed=2400,relay=False)
     node = sx126x.sx126x(serial_num="/dev/ttyS0", freq=868, addr=0, power=22, rssi=True, air_speed=2400, relay=False)
 
-    listen_thread = threading.Thread(target=listen, args=(node,))
-    temp_thread = threading.Thread(target=get_temp, args=(node,))
+    listen_thread = threading.Thread(target=listen, args=(node, client, topic,))
+    temp_thread = threading.Thread(target=get_water_level, args=(node,))
 
     listen_thread.start()
     temp_thread.start()

@@ -85,14 +85,14 @@ def join(node):
     node.send(data)
 
 
-def send_temp(node, address, temp):
-    content = "TEMP:" + str(temp.value * (5.0/1023.0))
+def send_water_level(node, address, water_level):
+    content = "WATER:" + str(water_level.value * (5.0/1023.0))
     data = get_data(address, offset_frequence, node, content)
     node.send(data)
 
 
 def main():
-    temp = MCP3008(0)
+    water_level = MCP3008(0)
     device_address = 1
 
     tty.setcbreak(sys.stdin.fileno())
@@ -128,9 +128,9 @@ def main():
                     node.power,
                     node.rssi
                 )
-            elif "TEMP" in message:
-                print("Getting Temp")
-                send_temp(node, address, temp)
+            elif "WATER" in message:
+                print("Getting water level")
+                send_water_level(node, address, water_level)
 
 
 if __name__ == "__main__":
