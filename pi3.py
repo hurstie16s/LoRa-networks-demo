@@ -98,6 +98,11 @@ def listen(node):
             if "JOIN" in content:
                 print("Device joining")
                 ack_join(node, address)
+            if "TEMP:" in content:
+                print("Device temperature received")
+                content = content[1:]
+                content = int(content.replace("'", ""))
+                print(content)
 
 
 def get_temp(node):
