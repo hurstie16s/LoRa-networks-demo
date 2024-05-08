@@ -122,7 +122,12 @@ def main():
                 print("Join Acknowledgment")
                 prefix, address = message.split(":")
                 device_address = int(address)
-                node.addr = device_address
+                node.set(
+                    node.freq,
+                    device_address,
+                    node.power,
+                    node.rssi
+                )
             elif "TEMP" in message:
                 print("Getting Temp")
                 send_temp(node, address, temp)
