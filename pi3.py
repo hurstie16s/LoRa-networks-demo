@@ -103,6 +103,7 @@ def listen(node):
 def get_temp(node):
     while True:
         for node_address in nodes:
+            print("Getting temp for", node_address)
             request_temp(node, node_address)
         time.sleep(5)
 
