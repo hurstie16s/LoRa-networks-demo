@@ -97,8 +97,9 @@ class sx126x:
         # The hardware UART of Pi3B+,Pi4B is /dev/ttyS0
         self.ser = serial.Serial(serial_num, 9600)
         self.ser.flushInput()
+        print("Node built, setting")
         self.set(freq, addr, power, rssi, air_speed, net_id, buffer_size, crypt, relay, lbt, wor)
-
+        print("Node set")
 
     def set(self, freq, addr, power, rssi, air_speed=2400,
             net_id=0, buffer_size=240, crypt=0,
@@ -182,6 +183,7 @@ class sx126x:
             self.ser.write(bytes(self.cfg_reg))
             r_buff = 0
             time.sleep(0.2)
+            print(self.ser.inWaiting())
             if self.ser.inWaiting() > 0:
                 time.sleep(0.1)
                 r_buff = self.ser.read(self.ser.inWaiting())
