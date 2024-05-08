@@ -8,7 +8,7 @@ import time
 class sx126x:
     M0 = 22
     M1 = 27
-    # if the header is 0xC0, then the LoRa register settings don't lost when it poweroff, and 0xC2 will be lost.
+    # if the header is 0xC0, then the LoRa register settings dont lost when it poweroff, and 0xC2 will be lost.
     # cfg_reg = [0xC0,0x00,0x09,0x00,0x00,0x00,0x62,0x00,0x17,0x43,0x00,0x00]
     cfg_reg = [0xC2, 0x00, 0x09, 0x00, 0x00, 0x00, 0x62, 0x00, 0x12, 0x43, 0x00, 0x00]
     get_reg = bytes(12)
@@ -36,7 +36,6 @@ class sx126x:
 
     SX126X_UART_BAUDRATE_1200 = 0x00
     SX126X_UART_BAUDRATE_2400 = 0x20
-
     SX126X_UART_BAUDRATE_4800 = 0x40
     SX126X_UART_BAUDRATE_9600 = 0x60
     SX126X_UART_BAUDRATE_19200 = 0x80
@@ -97,12 +96,10 @@ class sx126x:
         # The hardware UART of Pi3B+,Pi4B is /dev/ttyS0
         self.ser = serial.Serial(serial_num, 9600)
         self.ser.flushInput()
-        print("Node built, setting")
         self.set(freq, addr, power, rssi, air_speed, net_id, buffer_size, crypt, relay, lbt, wor)
-        print("Node set")
 
-    def set(self, freq, addr, power, rssi, air_speed=2400,
-            net_id=0, buffer_size=240, crypt=0,
+    def set(self, freq, addr, power, rssi, air_speed=2400, \
+            net_id=0, buffer_size=240, crypt=0, \
             relay=False, lbt=False, wor=False):
         self.send_to = addr
         self.addr = addr
@@ -133,7 +130,7 @@ class sx126x:
         # if power_temp != None:
 
         if rssi:
-            # enable print rssi value 
+            # enable print rssi value
             rssi_temp = 0x80
         else:
             # disable print rssi value
@@ -143,14 +140,14 @@ class sx126x:
         l_crypt = crypt & 0xff
         h_crypt = crypt >> 8 & 0xff
 
-        if not relay:
+        if relay == False:
             self.cfg_reg[3] = high_addr
             self.cfg_reg[4] = low_addr
             self.cfg_reg[5] = net_id_temp
             self.cfg_reg[6] = self.SX126X_UART_BAUDRATE_9600 + air_speed_temp
-            # 
+            #
             # it will enable to read noise rssi value when add 0x20 as follow
-            # 
+            #
             self.cfg_reg[7] = buffer_size_temp + power_temp + 0x20
             self.cfg_reg[8] = freq_temp
             #
@@ -165,9 +162,9 @@ class sx126x:
             self.cfg_reg[4] = 0x02
             self.cfg_reg[5] = 0x03
             self.cfg_reg[6] = self.SX126X_UART_BAUDRATE_9600 + air_speed_temp
-            # 
+            #
             # it will enable to read noise rssi value when add 0x20 as follow
-            # 
+            #
             self.cfg_reg[7] = buffer_size_temp + power_temp + 0x20
             self.cfg_reg[8] = freq_temp
             #
@@ -180,7 +177,6 @@ class sx126x:
         self.ser.flushInput()
 
         for i in range(2):
-            print("Bytes: "+str(bytes(self.cfg_reg)))
             self.ser.write(bytes(self.cfg_reg))
             r_buff = 0
             time.sleep(0.2)
@@ -218,7 +214,7 @@ class sx126x:
 
     def get_settings(self):
         # the pin M1 of lora HAT must be high when enter setting mode and get parameters
-        GPIO.output(self.M1, GPIO.HIGH)
+        GPIO.output(M1, GPIO.HIGH)
         time.sleep(0.1)
 
         # send command to get setting parameters
@@ -238,7 +234,7 @@ class sx126x:
             print("Node address is {0}.", addr_temp)
             print("Air speed is {0} bps" + lora_air_speed_dic.get(None, air_speed_temp))
             print("Power is {0} dBm" + lora_power_dic.get(None, power_temp))
-            GPIO.output(self.M1, GPIO.LOW)
+            GPIO.output(M1, GPIO.LOW)
 
     #
     # the data format like as following
@@ -258,10 +254,9 @@ class sx126x:
         if self.ser.inWaiting() > 0:
             time.sleep(0.5)
             r_buff = self.ser.read(self.ser.inWaiting())
-            print(r_buff)
 
             print("receive message from node address with frequence\033[1;32m %d,%d.125MHz\033[0m" % (
-                (r_buff[0] << 8) + r_buff[1], r_buff[2] + self.start_freq), end='\r\n', flush=True)
+            (r_buff[0] << 8) + r_buff[1], r_buff[2] + self.start_freq), end='\r\n', flush=True)
             print("message is " + str(r_buff[3:-1]), end='\r\n')
 
             # print the rssi
