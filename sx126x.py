@@ -97,14 +97,12 @@ class sx126x:
         # The hardware UART of Pi3B+,Pi4B is /dev/ttyS0
         self.ser = serial.Serial(serial_num, 9600)
         self.ser.flushInput()
-        flag = self.set(freq, addr, power, rssi, air_speed, net_id, buffer_size, crypt, relay, lbt, wor)
-        if not flag:
-            self.set(freq, addr, power, rssi, air_speed, net_id, buffer_size, crypt, relay, lbt, wor)
+        self.set(freq, addr, power, rssi, air_speed, net_id, buffer_size, crypt, relay, lbt, wor)
+
 
     def set(self, freq, addr, power, rssi, air_speed=2400,
             net_id=0, buffer_size=240, crypt=0,
             relay=False, lbt=False, wor=False):
-        flag=True
         self.send_to = addr
         self.addr = addr
         # We should pull up the M1 pin when sets the module
@@ -207,7 +205,6 @@ class sx126x:
                 self.ser.flushInput()
                 time.sleep(0.2)
                 print('\x1b[1A', end='\r')
-                flag = False
                 if i == 1:
                     print("setting fail,Press Esc to Exit and run again")
                     # time.sleep(2)
@@ -216,7 +213,6 @@ class sx126x:
         GPIO.output(self.M0, GPIO.LOW)
         GPIO.output(self.M1, GPIO.LOW)
         time.sleep(0.1)
-        return flag
 
     def get_settings(self):
         # the pin M1 of lora HAT must be high when enter setting mode and get parameters
