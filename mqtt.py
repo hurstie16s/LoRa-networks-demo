@@ -10,8 +10,8 @@ def main():
     topic = "<adv_net>"
 
     client = mqtt.Client()
-    client.on_connect = on_connect
-    client.on_message = on_message
+    #client.on_connect = on_connect
+    #client.on_message = on_message
 
     client.connect(hostname, broker_port, 60)
 
