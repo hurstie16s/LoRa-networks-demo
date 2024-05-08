@@ -81,10 +81,10 @@ def ack_join(node, address):
     node.send(data)
 
 
-def request_water_level(node, address):
+def request_ultrasonic(node, address):
     global nodes
 
-    data = get_data(address, offset_frequence, node, "WATER")
+    data = get_data(address, offset_frequence, node, "ULTRASONIC")
 
     node.send(data)
 
@@ -98,8 +98,8 @@ def listen(node, client, topic):
             if "JOIN" in content:
                 print("Device joining")
                 ack_join(node, address)
-            if "WATER:" in content:
-                print("Device water level received")
+            if "ULTRASONIC:" in content:
+                print("Device distance received")
                 content = content[1:]
                 prefix, water = content.replace("'", "").split(":")
                 water = str(address) + ":" + str(float(water))
@@ -107,11 +107,11 @@ def listen(node, client, topic):
                 client.publish(topic, water)
 
 
-def get_water_level(node):
+def get_ultrasonic(node):
     while True:
         for node_address in nodes:
-            print("Getting water level for", node_address)
-            request_water_level(node, node_address)
+            print("Getting distance", node_address)
+            request_ultrasonic(node, node_address)
         time.sleep(15)
 
 
@@ -125,7 +125,7 @@ def main():
     node = sx126x.sx126x(serial_num="/dev/ttyS0", freq=868, addr=0, power=22, rssi=True, air_speed=2400, relay=False)
 
     listen_thread = threading.Thread(target=listen, args=(node, client, topic,))
-    temp_thread = threading.Thread(target=get_water_level, args=(node,))
+    temp_thread = threading.Thread(target=get_ultrasonic, args=(node,))
 
     listen_thread.start()
     temp_thread.start()
