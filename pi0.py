@@ -86,7 +86,7 @@ def join(node):
 
 
 def send_temp(node, address, temp):
-    content = "TEMP:" + str(temp.value)
+    content = "TEMP:" + str(temp.value * (5.0/1023.0))
     data = get_data(address, offset_frequence, node, content)
     node.send(data)
 
