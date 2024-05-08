@@ -107,10 +107,12 @@ def main():
         relay=False
     )
 
+    time.sleep(0.3)
+
     # show join
     join(node)
 
-    ultrasonic = DistanceSensor(echo=17, trigger=14)
+    ultrasonic = DistanceSensor(trigger=27, echo=17)
 
     while True:
 
