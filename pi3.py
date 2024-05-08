@@ -10,7 +10,7 @@ import tty
 from threading import Timer
 
 global offset_frequence
-global nodes
+#global nodes
 
 nodes = []
 offset_frequence = 18
@@ -51,8 +51,24 @@ def send_deal(node):
     print('\x1b[3A', end='\r')
 
 
-def ack_join(node, address):
+def get_data(dest, offset, node, data):
+    return bytes(
+        [dest >> 8]
+    ) + bytes(
+        [dest & 0xff]
+    ) + bytes(
+        [offset]
+    ) + bytes(
+        [node.addr >> 8]
+    ) + bytes(
+        [node.addr & 0xff]
+    ) + bytes(
+        [node.offset_freq]
+    ) + data.encode()
 
+
+def ack_join(node, address):
+    global nodes
     print("Sending ACK to address ", address)
 
     new_address = len(nodes) + 2
@@ -60,21 +76,35 @@ def ack_join(node, address):
 
     message = "ACK-JOIN:" + str(new_address)
 
-    data = bytes(
-        [address >> 8]
-    ) + bytes(
-        [address & 0xff]
-    ) + bytes(
-        [offset_frequence]
-    ) + bytes(
-        [node.addr >> 8]
-    ) + bytes(
-        [node.addr & 0xff]
-    ) + bytes(
-        [node.offset_freq]
-    ) + message.encode()
+    data = get_data(address, offset_frequence, node, message)
 
     node.send(data)
+
+
+def request_temp(node, address):
+    global nodes
+
+    data = get_data(address, offset_frequence, node, "TEMP")
+
+    node.send(data)
+
+
+def listen(node):
+    while True:
+        address, content, flag = node.receive_gateway()
+        if flag:
+            print("Message received")
+            print(content)
+            if "JOIN" in content:
+                print("Device joining")
+                ack_join(node, address)
+
+
+def get_temp(node):
+    while True:
+        for node_address in nodes:
+            request_temp(node, node_address)
+        time.sleep(5)
 
 
 def main():
@@ -82,14 +112,14 @@ def main():
     # node = sx126x.sx126x(serial_num = "/dev/ttyS0",freq=433,addr=0,power=22,rssi=False,air_speed=2400,relay=False)
     node = sx126x.sx126x(serial_num="/dev/ttyS0", freq=868, addr=0, power=22, rssi=True, air_speed=2400, relay=False)
 
-    while True:
-        address, message, flag = node.receive_gateway()
-        if flag:
-            print("Message received")
-            print(message)
-            if "JOIN" in message:
-                print("Device joining")
-                ack_join(node, address)
+    listen_thread = threading.Thread(target=listen, args=(node,))
+    temp_thread = threading.Thread(target=get_temp, args=(node,))
+
+    listen_thread.start()
+    temp_thread.start()
+
+    listen_thread.join()
+    temp_thread.join()
 
 
 if __name__ == "__main__":

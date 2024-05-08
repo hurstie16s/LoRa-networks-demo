@@ -22,6 +22,7 @@ import time
 import select
 import termios
 import tty
+from gpiozero import MCP3008
 from threading import Timer
 
 global offset_frequence
@@ -63,28 +64,37 @@ def send_deal(node):
     print('\x1b[3A', end='\r')
 
 
-def join(node):
-    data = bytes(
-        [0 >> 8]
+def get_data(dest, offset, node, data):
+    return bytes(
+        [dest >> 8]
     ) + bytes(
-        [0 & 0xff]
+        [dest & 0xff]
     ) + bytes(
-        [offset_frequence]
+        [offset]
     ) + bytes(
         [node.addr >> 8]
     ) + bytes(
         [node.addr & 0xff]
     ) + bytes(
         [node.offset_freq]
-    ) + "JOIN".encode()
+    ) + data.encode()
 
+
+def join(node):
+    data = get_data(0, offset_frequence, node, "JOIN")
+    node.send(data)
+
+
+def send_temp(node, address, temp):
+    content = "TEMP:" + str(temp.value)
+    data = get_data(address, offset_frequence, node, content)
     node.send(data)
 
 
 def main():
+    temp = MCP3008(0)
     device_address = 1
 
-    old_settings = termios.tcgetattr(sys.stdin)
     tty.setcbreak(sys.stdin.fileno())
     # node = sx126x.sx126x(serial_num = "/dev/ttyS0",freq=433,addr=0,power=22,rssi=False,air_speed=2400,relay=False)
     node = sx126x.sx126x(
@@ -113,6 +123,9 @@ def main():
                 prefix, address = message.split(":")
                 device_address = int(address)
                 node.addr = device_address
+            elif "TEMP" in message:
+                print("Getting Temp")
+                send_temp(node, address, temp)
 
 
 if __name__ == "__main__":
