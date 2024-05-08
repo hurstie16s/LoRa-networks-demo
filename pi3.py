@@ -12,7 +12,7 @@ import paho.mqtt.client as mqtt
 
 global offset_frequence
 
-nodes = []
+nodes = {}
 offset_frequence = 18
 
 
@@ -72,7 +72,7 @@ def ack_join(node, address):
     print("Sending ACK to address ", address)
 
     new_address = len(nodes) + 2
-    nodes.append(new_address)
+    nodes.update({new_address: 0})
 
     message = "ACK-JOIN:" + str(new_address)
 
@@ -99,6 +99,8 @@ def listen(node, client, topic):
                 print("Device joining")
                 ack_join(node, address)
             if "ULTRASONIC:" in content:
+                if nodes[address] != 0:
+                    nodes[address] -= 1
                 print("Device distance received")
                 content = content[1:]
                 prefix, water = content.replace("'", "").split(":")
@@ -109,9 +111,13 @@ def listen(node, client, topic):
 
 def get_ultrasonic(node):
     while True:
-        for node_address in nodes:
-            print("Getting distance", node_address)
-            request_ultrasonic(node, node_address)
+        for address in nodes.keys():
+            if nodes[address] > 2:
+                nodes.pop(address)
+            else:
+                nodes[address] += 1
+                print("Getting distance", address)
+                request_ultrasonic(node, address)
         time.sleep(15)
 
 

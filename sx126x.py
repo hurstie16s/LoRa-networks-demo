@@ -183,7 +183,6 @@ class sx126x:
             self.ser.write(bytes(self.cfg_reg))
             r_buff = 0
             time.sleep(0.2)
-            print(self.ser.inWaiting())
             if self.ser.inWaiting() > 0:
                 time.sleep(0.1)
                 r_buff = self.ser.read(self.ser.inWaiting())
