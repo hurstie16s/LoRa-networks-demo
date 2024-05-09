@@ -10,7 +10,6 @@ import tty
 from threading import Timer
 import paho.mqtt.client as mqtt
 
-
 nodes = {}
 offset_frequence = 18
 initial_address = 2
@@ -119,7 +118,7 @@ def get_water(node):
         for address in nodes.keys():
             if nodes[address] > 2:
                 nodes.pop(address)
-                print("Node", node[address], "removed due to no response")
+                print("Node", nodes[address], "removed due to no response")
             else:
                 nodes[address] += 1
                 print("Getting water level", address)
@@ -127,9 +126,22 @@ def get_water(node):
         time.sleep(15)
 
 
-def main():
+def on_connect(client, userdata, flags, rc):
+    if rc == 0:
+        print("Connected to broker")
+    else:
+        print("Connection failed")
 
+
+def on_publish(client, userdata, mid):
+    print("Published")
+
+
+def main():
     client = mqtt.Client()
+    client.on_connect = on_connect
+    client.on_publish = on_publish
+    client.connect("localhost", 1883, 60)
     topic = "adv_net"
 
     tty.setcbreak(sys.stdin.fileno())
