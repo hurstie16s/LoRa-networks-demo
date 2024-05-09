@@ -22,7 +22,7 @@ import time
 import select
 import termios
 import tty
-#from gpiozero import DistanceSensor
+from gpiozero import MCP3008
 from threading import Timer
 
 global offset_frequence
@@ -84,12 +84,12 @@ def join(node):
     data = get_data(0, offset_frequence, node, "JOIN")
     node.send(data)
 
-"""
-def send_ultrasonic(node, address, ultrasonic):
-    content = "ULTRASONIC:" + str(ultrasonic.distance)
+
+def send_water_level(node, address, water_level):
+    content = "WATER:" + str(water_level.value)
     data = get_data(address, offset_frequence, node, content)
     node.send(data)
-"""
+
 
 def main():
 
@@ -104,7 +104,7 @@ def main():
     # show join
     join(node)
 
-    #ultrasonic = DistanceSensor(trigger=27, echo=17)
+    water_level = MCP3008(0)
 
     while True:
 
@@ -124,9 +124,9 @@ def main():
                     node.power,
                     node.rssi
                 )
-            elif "ULTRASONIC" in message:
+            elif "WATER" in message:
                 print("Getting water level")
-                #send_ultrasonic(node, address, ultrasonic)
+                send_water_level(node, address, water_level)
 
 
 if __name__ == "__main__":

@@ -10,10 +10,10 @@ import tty
 from threading import Timer
 import paho.mqtt.client as mqtt
 
-global offset_frequence
 
 nodes = {}
 offset_frequence = 18
+initial_address = 2
 
 
 def send_deal(node):
@@ -68,10 +68,12 @@ def get_data(dest, offset, node, data):
 
 
 def ack_join(node, address):
+    global initial_address
     global nodes
     print("Sending ACK to address ", address)
 
-    new_address = len(nodes) + 2
+    new_address = initial_address
+    initial_address += 1
     nodes.update({new_address: 0})
 
     message = "ACK-JOIN:" + str(new_address)
@@ -81,10 +83,10 @@ def ack_join(node, address):
     node.send(data)
 
 
-def request_ultrasonic(node, address):
+def request_water(node, address):
     global nodes
 
-    data = get_data(address, offset_frequence, node, "ULTRASONIC")
+    data = get_data(address, offset_frequence, node, "WATER")
 
     node.send(data)
 
@@ -98,26 +100,28 @@ def listen(node, client, topic):
             if "JOIN" in content:
                 print("Device joining")
                 ack_join(node, address)
-            if "ULTRASONIC:" in content:
+            if "WATER:" in content:
                 if nodes[address] != 0:
                     nodes[address] -= 1
-                print("Device distance received")
+                print("Water level received")
                 content = content[1:]
                 prefix, water = content.replace("'", "").split(":")
                 water = str(address) + ":" + str(float(water))
-                print(water)
+                print("Level:", water)
+                print("Publishing to MQTT")
                 client.publish(topic, water)
 
 
-def get_ultrasonic(node):
+def get_water(node):
     while True:
         for address in nodes.keys():
             if nodes[address] > 2:
                 nodes.pop(address)
+                print("Node", node[address], "removed due to no response")
             else:
                 nodes[address] += 1
-                print("Getting distance", address)
-                request_ultrasonic(node, address)
+                print("Getting water level", address)
+                request_water(node, address)
         time.sleep(15)
 
 
@@ -131,7 +135,7 @@ def main():
     node = sx126x.sx126x(serial_num="/dev/ttyS0", freq=868, addr=0, power=22, rssi=True, air_speed=2400, relay=False)
 
     listen_thread = threading.Thread(target=listen, args=(node, client, topic,))
-    temp_thread = threading.Thread(target=get_ultrasonic, args=(node,))
+    temp_thread = threading.Thread(target=get_water, args=(node,))
 
     listen_thread.start()
     temp_thread.start()
