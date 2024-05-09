@@ -23,10 +23,12 @@ import select
 import termios
 import tty
 from gpiozero import MCP3008
+import uuid
 from threading import Timer
 
 global offset_frequence
 offset_frequence = 18
+identifier = uuid.uuid4().hex
 
 
 def send_deal(node):
@@ -81,7 +83,8 @@ def get_data(dest, offset, node, data):
 
 
 def join(node):
-    data = get_data(0, offset_frequence, node, "JOIN")
+    content = "JOIN:"+str(identifier)
+    data = get_data(0, offset_frequence, node, content)
     node.send(data)
 
 
@@ -116,14 +119,15 @@ def main():
             if "ACK-JOIN:" in message:
                 # Acknowledge join, change address
                 print("Join Acknowledgment")
-                prefix, address = message.split(":")
-                device_address = int(address)
-                node.set(
-                    node.freq,
-                    device_address,
-                    node.power,
-                    node.rssi
-                )
+                prefix, device_id, address = message.split(":")
+                if device_id == identifier:
+                    device_address = int(address)
+                    node.set(
+                        node.freq,
+                        device_address,
+                        node.power,
+                        node.rssi
+                    )
             elif "WATER" in message:
                 print("Getting water level")
                 send_water_level(node, address, water_level)

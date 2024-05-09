@@ -67,16 +67,17 @@ def get_data(dest, offset, node, data):
     ) + data.encode()
 
 
-def ack_join(node, address):
+def ack_join(node, content, address):
     global initial_address
     global nodes
     print("Sending ACK to address ", address)
+    prefix, device_id = content.split(":")
 
     new_address = initial_address
     initial_address += 1
     nodes.update({new_address: 0})
 
-    message = "ACK-JOIN:" + str(new_address)
+    message = "ACK-JOIN:" + device_id + ":" + str(new_address)
 
     data = get_data(address, offset_frequence, node, message)
 
@@ -96,13 +97,14 @@ def listen(node, client, topic):
         address, content, flag = node.receive_gateway()
         if flag:
             print("Message received")
+            content = content[1:]
+            content = content.replace("'", "")
             print(content)
             if "JOIN" in content:
                 print("Device joining")
-                ack_join(node, address)
+                ack_join(node, content, address)
             if "WATER:" in content:
-                if nodes[address] != 0:
-                    nodes[address] -= 1
+                nodes[address] = 0
                 print("Water level received")
                 content = content[1:]
                 prefix, water = content.replace("'", "").split(":")
