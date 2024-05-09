@@ -118,7 +118,7 @@ def get_water(node):
         for address in nodes.keys():
             if nodes[address] > 2:
                 nodes.pop(address)
-                print("Node", nodes[address], "removed due to no response")
+                print("Node with address", address, "removed due to no response")
             else:
                 nodes[address] += 1
                 print("Getting water level", address)
