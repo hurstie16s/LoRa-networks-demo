@@ -115,14 +115,17 @@ def listen(node, client, topic):
 
 def get_water(node):
     while True:
+        to_remove=[]
         for address in nodes.keys():
             if nodes[address] > 2:
-                nodes.pop(address)
+                to_remove.append(address)
                 print("Node with address", address, "removed due to no response")
             else:
                 nodes[address] += 1
                 print("Getting water level", address)
                 request_water(node, address)
+        for i in to_remove:
+            nodes.pop(i)
         time.sleep(15)
 
 
